@@ -36,12 +36,15 @@ export function SettingsSwitch({
     onToggle?.(value);
   };
 
+  // sr-only (not `hidden`) keeps the real checkbox focusable and in the
+  // accessibility tree; the visual track below is decorative.
   const input = (
     <input
-      hidden
+      className="peer sr-only"
       data-testid={testId}
       name={name}
       type="checkbox"
+      role="switch"
       onChange={(e) => handleToggle(e.target.checked)}
       checked={controlledIsToggled ?? isToggled}
       disabled={isDisabled}
@@ -49,7 +52,10 @@ export function SettingsSwitch({
   );
 
   const toggle = (
-    <ToggleSwitchVisual enabled={controlledIsToggled ?? isToggled} />
+    <ToggleSwitchVisual
+      enabled={controlledIsToggled ?? isToggled}
+      className="peer-focus-visible:ring-2 peer-focus-visible:ring-focus"
+    />
   );
 
   const label =
