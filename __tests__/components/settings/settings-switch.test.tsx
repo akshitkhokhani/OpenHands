@@ -22,6 +22,44 @@ describe("SettingsSwitch", () => {
     expect(onToggleMock).toHaveBeenCalledWith(false);
   });
 
+  it("should be reachable with Tab and toggle with Space", async () => {
+    const user = userEvent.setup();
+    const onToggleMock = vi.fn();
+    render(
+      <SettingsSwitch testId="test-switch" onToggle={onToggleMock}>
+        Test Switch
+      </SettingsSwitch>,
+    );
+
+    await user.tab();
+
+    const switchControl = screen.getByRole("switch", { name: "Test Switch" });
+    expect(switchControl).toHaveFocus();
+    expect(switchControl).not.toBeChecked();
+
+    await user.keyboard(" ");
+    expect(onToggleMock).toHaveBeenCalledWith(true);
+    expect(switchControl).toBeChecked();
+  });
+
+  it("should keep a disabled switch out of the tab order", async () => {
+    const user = userEvent.setup();
+    const onToggleMock = vi.fn();
+    render(
+      <SettingsSwitch testId="test-switch" onToggle={onToggleMock} isDisabled>
+        Test Switch
+      </SettingsSwitch>,
+    );
+
+    await user.tab();
+    await user.keyboard(" ");
+
+    const switchControl = screen.getByRole("switch", { name: "Test Switch" });
+    expect(switchControl).not.toHaveFocus();
+    expect(switchControl).toBeDisabled();
+    expect(onToggleMock).not.toHaveBeenCalled();
+  });
+
   it("should render a beta tag if isBeta is true", () => {
     const { rerender } = render(
       <SettingsSwitch testId="test-switch" onToggle={vi.fn()} isBeta={false}>
